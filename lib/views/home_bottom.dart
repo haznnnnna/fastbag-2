@@ -1,5 +1,5 @@
 import 'package:convex_bottom_bar/convex_bottom_bar.dart';
-import 'package:fastbag/feature/homescreen/screens/homepage.dart';
+import 'package:fastbag/views/homepage.dart';
 import 'package:flutter/material.dart';
 
 class HomeBottom extends StatefulWidget {
@@ -12,7 +12,7 @@ class HomeBottom extends StatefulWidget {
 class _HomeBottomState extends State<HomeBottom> {
   int _selectedIndex = 0;
   final List<Widget> _pages = [
-    Homepage(),
+    CategoryScreen(),
   ];
   @override
   Widget build(BuildContext context) {

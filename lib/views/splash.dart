@@ -1,9 +1,9 @@
 
-import 'package:fastbag/feature/auth/screens/signup.dart';
+import 'package:fastbag/views/signup.dart';
 import 'package:flutter/material.dart';
 
-import '../../core/constants/imageconstants.dart';
-import '../../core/constants/localvariables.dart';
+import '../core/constants/imageconstants.dart';
+import '../core/constants/localvariables.dart';
 
 class Splash extends StatefulWidget {
   const Splash({super.key});

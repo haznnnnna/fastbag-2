@@ -1,22 +1,24 @@
 import 'dart:convert';
 
-import 'package:fastbag/feature/auth/screens/otplogin.dart';
+import 'package:fastbag/views/otplogin.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../core/constants/localvariables.dart';
+import '../core/constants/localvariables.dart';
+import '../viewmodels/auth_viewmodel.dart';
 String mobileNumber = "";
-class Signup extends StatefulWidget {
+class Signup extends ConsumerStatefulWidget {
   const Signup({super.key});
 
   @override
-  State<Signup> createState() => _SignupState();
+  ConsumerState<Signup> createState() => _SignupState();
 }
 
-class _SignupState extends State<Signup> {
+class _SignupState extends ConsumerState<Signup> {
   TextEditingController phoneNumberController=TextEditingController();
 
   bool isLoading = false;
@@ -51,6 +53,7 @@ class _SignupState extends State<Signup> {
 
   @override
   Widget build(BuildContext context) {
+
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -105,14 +108,18 @@ class _SignupState extends State<Signup> {
               ),
             ),
             GestureDetector(
-              onTap: () {
-                if (mobileNumber.isNotEmpty) {
-                  registerUser(mobileNumber); // Pass the stored number
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text("Please enter a valid phone number")),
-                  );
-                }
+              onTap: () async{
+               await ref.watch(authProvider).register(phoneNumberController.text);
+               if(phoneNumberController.text.isNotEmpty){
+                 Navigator.push(context, MaterialPageRoute(builder: (context) => Otplogin(mobileNumber: phoneNumberController.text),));
+               }
+                // if (mobileNumber.isNotEmpty) {
+                //   registerUser(mobileNumber); // Pass the stored number
+                // } else {
+                //   ScaffoldMessenger.of(context).showSnackBar(
+                //     SnackBar(content: Text("Please enter a valid phone number")),
+                //   );
+                // }
               },
               child: Container(
                 height: height * 0.08,

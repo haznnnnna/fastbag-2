@@ -1,27 +1,29 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:fastbag/feature/auth/screens/signup.dart';
-import 'package:fastbag/feature/auth/screens/signup.dart';
-import 'package:fastbag/feature/homescreen/screens/home_bottom.dart';
-import 'package:fastbag/feature/homescreen/screens/homepage.dart';
+import 'package:fastbag/viewmodels/auth_viewmodel.dart';
+import 'package:fastbag/views/signup.dart';
+import 'package:fastbag/views/signup.dart';
+import 'package:fastbag/views/home_bottom.dart';
+import 'package:fastbag/views/homepage.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:pin_code_fields/pin_code_fields.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../../core/constants/localvariables.dart';
+import '../core/constants/localvariables.dart';
 
-class Otplogin extends StatefulWidget {
+class Otplogin extends ConsumerStatefulWidget {
   final String mobileNumber;
   const Otplogin({super.key, required this.mobileNumber});
 
   @override
-  State<Otplogin> createState() => _OtploginState();
+  ConsumerState<Otplogin> createState() => _OtploginState();
 }
 
-class _OtploginState extends State<Otplogin> {
+class _OtploginState extends ConsumerState<Otplogin> {
   String otpCode = "";
   bool isLoading = false;
 
@@ -180,7 +182,13 @@ class _OtploginState extends State<Otplogin> {
                           borderRadius: BorderRadius.circular(24),
                         ),
                       ),
-                      onPressed: isLoading ? null : loginWithOtp,
+                      onPressed: () async {
+                        await ref.watch(authProvider).login(
+                            widget.mobileNumber, otpCode);
+                        if(otpCode.isNotEmpty){
+                          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeBottom(),));
+                        }
+                      },
                       child: isLoading
                           ? CircularProgressIndicator(color: Colors.white)
                           : Text("Verify", style: TextStyle(color: Colors.white, fontSize: 16)),
