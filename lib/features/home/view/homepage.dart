@@ -1,18 +1,35 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../viewmodels/category_viewmodel.dart';
+import 'package:provider/provider.dart';
 
-class CategoryScreen extends ConsumerWidget {
-  bool isLoading=true;
+import '../viewmodel/category_viewmodel.dart';
+
+class Homepage extends StatefulWidget {
+  const Homepage({super.key});
+
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final categories = ref.watch(categoryProvider);
-    final isLoading = categories.isEmpty;
+  State<Homepage> createState() => _HomepageState();
+}
 
+class _HomepageState extends State<Homepage> {
+
+  // late CategoryViewModel categoryViewModel = CategoryViewModel();
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // final categoryViewModel=Provider.of<CategoryViewModel>(context);
+    // final categories = categoryViewModel.categories;
+    // final isLoading = categoryViewModel.isLoading;
+  }
+  @override
+  Widget build(BuildContext context) {
+    final categoryViewModel=Provider.of<CategoryViewModel>(context);
+    final categories = categoryViewModel.categories;
+    final isLoading = categoryViewModel.isLoading;
     final double height = MediaQuery.of(context).size.height;
     final double width = MediaQuery.of(context).size.width;
-
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -43,7 +60,7 @@ class CategoryScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 20),
 
-              isLoading
+              categoryViewModel.categories.isEmpty
                   ? Center(child: CircularProgressIndicator())
                   : SizedBox(
                 height: height * 0.5,
@@ -53,17 +70,17 @@ class CategoryScreen extends ConsumerWidget {
                     crossAxisCount: 4,
                     childAspectRatio: 0.8,
                   ),
-                  itemCount: categories.length,
+                  itemCount: categoryViewModel.categories.length,
                   itemBuilder: (context, index) {
                     return Column(
                       children: [
                         CircleAvatar(
                           radius: 25,
-                          backgroundImage: NetworkImage(categories[index].image),
+                          backgroundImage: NetworkImage(categoryViewModel.categories[index].image),
                         ),
                         const SizedBox(height: 5),
                         Text(
-                          categories[index].name,
+                          categoryViewModel.categories[index].name,
                           style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                         ),
                       ],
@@ -81,13 +98,13 @@ class CategoryScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 20),
 
-              isLoading
+              categoryViewModel.categories.isEmpty
                   ? Center(child: CircularProgressIndicator())
                   : SizedBox(
                 height: height * 0.8,
                 child: GridView.builder(
                   physics: BouncingScrollPhysics(),
-                  itemCount: categories.length,
+                  itemCount: categoryViewModel.categories.length,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisSpacing: width * 0.05,
                     mainAxisSpacing: height * 0.05,
@@ -121,7 +138,7 @@ class CategoryScreen extends ConsumerWidget {
                                 ),
                               ),
                               child: Image.network(
-                                categories[index].image,
+                                categoryViewModel.categories[index].image,
                                 width: 100,
                                 height: 80,
                                 fit: BoxFit.cover,
@@ -129,7 +146,7 @@ class CategoryScreen extends ConsumerWidget {
                             ),
                             const SizedBox(width: 10),
                             Text(
-                              categories[index].name,
+                              categoryViewModel.categories[index].name,
                               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                             ),
                           ],
@@ -143,6 +160,7 @@ class CategoryScreen extends ConsumerWidget {
           ),
         ),
       ),
-    );
+    );;
   }
 }
+

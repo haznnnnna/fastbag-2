@@ -1,29 +1,30 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:fastbag/viewmodels/auth_viewmodel.dart';
-import 'package:fastbag/views/signup.dart';
-import 'package:fastbag/views/signup.dart';
-import 'package:fastbag/views/home_bottom.dart';
-import 'package:fastbag/views/homepage.dart';
+import 'package:fastbag/features/auth/viewmodel/auth_viewmodel.dart';
+import 'package:fastbag/features/auth/view/signup.dart';
+import 'package:fastbag/features/auth/view/signup.dart';
+import 'package:fastbag/features/home/view/home_bottom.dart';
+import 'package:fastbag/features/home/view/homepage.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:http/http.dart' as http;
 import 'package:pin_code_fields/pin_code_fields.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../core/constants/localvariables.dart';
+import '../../../core/constants/localvariables.dart';
 
-class Otplogin extends ConsumerStatefulWidget {
+class Otplogin extends StatefulWidget {
   final String mobileNumber;
   const Otplogin({super.key, required this.mobileNumber});
 
   @override
-  ConsumerState<Otplogin> createState() => _OtploginState();
+  State<Otplogin> createState() => _OtploginState();
 }
 
-class _OtploginState extends ConsumerState<Otplogin> {
+class _OtploginState extends State<Otplogin> {
+  final TextEditingController _otp = TextEditingController();
   String otpCode = "";
   bool isLoading = false;
 
@@ -105,6 +106,7 @@ class _OtploginState extends ConsumerState<Otplogin> {
   }
   @override
   Widget build(BuildContext context) {
+    final _otpViewModel=Provider.of<AuthViewModel>(context);
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
     return  Scaffold(
@@ -129,6 +131,7 @@ class _OtploginState extends ConsumerState<Otplogin> {
             SizedBox(
               width: width * 0.7,
               child: PinCodeTextField(
+                controller: _otp,
                 appContext: context,
                 length: 6,
                 keyboardType: TextInputType.number,
@@ -183,9 +186,8 @@ class _OtploginState extends ConsumerState<Otplogin> {
                         ),
                       ),
                       onPressed: () async {
-                        await ref.watch(authProvider).login(
-                            widget.mobileNumber, otpCode);
                         if(otpCode.isNotEmpty){
+                          _otpViewModel.login(widget.mobileNumber, otpCode);
                           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomeBottom(),));
                         }
                       },

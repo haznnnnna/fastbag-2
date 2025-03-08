@@ -1,14 +1,16 @@
+import 'package:fastbag/features/auth/viewmodel/auth_viewmodel.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:provider/provider.dart';
 
-import 'views/otplogin.dart';
-import 'views/signup.dart';
-import 'views/home_bottom.dart';
-import 'views/homepage.dart';
-import 'views/splash.dart';
+import 'features/auth/view/otplogin.dart';
+import 'features/auth/view/signup.dart';
+import 'features/home/view/home_bottom.dart';
+import 'features/home/view/homepage.dart';
+import 'features/home/view/splash.dart';
+import 'features/home/viewmodel/category_viewmodel.dart';
 
 void main() {
-  runApp(ProviderScope(child: const MyApp()));
+  runApp ( MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -16,11 +18,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
+    return SafeArea(
+      top: true,
+      child: MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (context) => AuthViewModel(),),
+          ChangeNotifierProvider(create: (context) => CategoryViewModel(),),
+        ],
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          theme: ThemeData(
+          ),
+          home: Splash(),
+        ),
       ),
-      home: Splash(),
     );
   }
 }

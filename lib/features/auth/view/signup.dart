@@ -1,59 +1,59 @@
 import 'dart:convert';
 
-import 'package:fastbag/views/otplogin.dart';
+import 'package:fastbag/features/auth/view/otplogin.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl_phone_field/intl_phone_field.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../core/constants/localvariables.dart';
-import '../viewmodels/auth_viewmodel.dart';
+import '../../../core/constants/localvariables.dart';
+import '../viewmodel/auth_viewmodel.dart';
 String mobileNumber = "";
-class Signup extends ConsumerStatefulWidget {
+class Signup extends StatefulWidget {
   const Signup({super.key});
 
   @override
-  ConsumerState<Signup> createState() => _SignupState();
+  State<Signup> createState() => _SignupState();
 }
 
-class _SignupState extends ConsumerState<Signup> {
+class _SignupState extends State<Signup> {
   TextEditingController phoneNumberController=TextEditingController();
 
   bool isLoading = false;
 
-  Future<void> registerUser(String mobileNumber) async {
-    setState(() => isLoading = true);
-
-    final url = Uri.parse("https://fastbag.pythonanywhere.com/users/register/");
-    final response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"mobile_number": mobileNumber}),
-    );
-
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      SharedPreferences prefs = await SharedPreferences.getInstance();
-      await prefs.setString('mobile_number', mobileNumber);
-
-      Future.delayed(Duration(milliseconds: 300), () {
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Otplogin(mobileNumber: mobileNumber,)));
-      });
-    }
-    else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error: ${response.body}")),
-      );
-    }
-
-    setState(() => isLoading = false);
-  }
+  // Future<void> registerUser(String mobileNumber) async {
+  //   setState(() => isLoading = true);
+  //
+  //   final url = Uri.parse("https://fastbag.pythonanywhere.com/users/register/");
+  //   final response = await http.post(
+  //     url,
+  //     headers: {"Content-Type": "application/json"},
+  //     body: jsonEncode({"mobile_number": mobileNumber}),
+  //   );
+  //
+  //   if (response.statusCode == 200 || response.statusCode == 201) {
+  //     SharedPreferences prefs = await SharedPreferences.getInstance();
+  //     await prefs.setString('mobile_number', mobileNumber);
+  //
+  //     Future.delayed(Duration(milliseconds: 300), () {
+  //       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Otplogin(mobileNumber: mobileNumber,)));
+  //     });
+  //   }
+  //   else {
+  //     ScaffoldMessenger.of(context).showSnackBar(
+  //       SnackBar(content: Text("Error: ${response.body}")),
+  //     );
+  //   }
+  //
+  //   setState(() => isLoading = false);
+  // }
 
 
   @override
   Widget build(BuildContext context) {
-
+   final _loginViewModel=Provider.of<AuthViewModel>(context);
     height = MediaQuery.of(context).size.height;
     width = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -109,17 +109,18 @@ class _SignupState extends ConsumerState<Signup> {
             ),
             GestureDetector(
               onTap: () async{
-               await ref.watch(authProvider).register(phoneNumberController.text);
-               if(phoneNumberController.text.isNotEmpty){
-                 Navigator.push(context, MaterialPageRoute(builder: (context) => Otplogin(mobileNumber: phoneNumberController.text),));
-               }
-                // if (mobileNumber.isNotEmpty) {
-                //   registerUser(mobileNumber); // Pass the stored number
-                // } else {
-                //   ScaffoldMessenger.of(context).showSnackBar(
-                //     SnackBar(content: Text("Please enter a valid phone number")),
-                //   );
-                // }
+               // await ref.watch(authProvider).register(phoneNumberController.text);
+               // if(phoneNumberController.text.isNotEmpty){
+               //   Navigator.push(context, MaterialPageRoute(builder: (context) => Otplogin(mobileNumber: phoneNumberController.text),));
+               // }
+                if (phoneNumberController.text.isNotEmpty) {
+                 _loginViewModel.register(phoneNumberController.text.trim());
+                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => Otplogin(mobileNumber: mobileNumber),));
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("Please enter a valid phone number")),
+                  );
+                }
               },
               child: Container(
                 height: height * 0.08,
